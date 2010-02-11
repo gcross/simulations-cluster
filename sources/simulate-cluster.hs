@@ -160,10 +160,9 @@ analyzeTrialEnergies tolerance best_energy trial_energy
 main = do
     args <- getArgs
 
-    let angle = read $ args !! 0
-        width = read $ args !! 1
-        height = read $ args !! 2
-        operator_site_tensors = makeModelOperatorSiteTensors angle width height
+    let width = read $ args !! 0
+        height = read $ args !! 1
+        operator_site_tensors = makeModelOperatorSiteTensors 0.5 width height
         initial_bandwidth = 2
         nextBandwidth = (+ 6)
         -- nextBandwidth = ceiling . (* 1.05) . fromIntegral
@@ -171,9 +170,13 @@ main = do
         multisweep_energy_change_convergence_criterion = 1e-3
         tolerance = 1e-5
 
-    putStrLn $ "Angle = " ++ show angle
     putStrLn $ "Width = " ++ show width
     putStrLn $ "Height = " ++ show height
+    unless (length operator_site_tensors == width * height) $ do
+        printf 
+            "PROGRAMMER ERROR:  number of sites (%i) /= width (%i) * height (%i)"
+            (length operator_site_tensors) width height
+        exitFailure
     putStrLn $ "Total = " ++ show (length operator_site_tensors)
 
     -- @    << Define callbacks >>
