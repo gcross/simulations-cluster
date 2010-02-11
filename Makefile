@@ -5,6 +5,7 @@
 
 all: \
 	programs/simulate-cluster \
+	programs/simulate-cluster-random \
 	programs/simulate-cluster-1d \
 
 LIBS = 

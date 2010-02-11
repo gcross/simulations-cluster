@@ -12,7 +12,8 @@
 <v t="gcross.20091211100630.1232" str_leo_pos="2,0,4"><vh>@chapters</vh></v>
 <v t="gcross.20091211100630.1234"><vh>@thin Makefile</vh></v>
 <v t="gcross.20091211100630.1307"><vh>@path sources</vh>
-<v t="gcross.20100130190931.1265"><vh>@thin simulate-cluster.hs</vh></v>
+<v t="gcross.20100130190931.1265"><vh>@thin simulate-cluster-random.hs</vh></v>
+<v t="gcross.20100211100316.1267"><vh>@thin simulate-cluster.hs</vh></v>
 <v t="gcross.20100201141018.1256"><vh>@thin simulate-cluster-1d.hs</vh></v>
 </v>
 </vnodes>
