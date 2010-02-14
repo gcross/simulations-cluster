@@ -23,6 +23,9 @@ import Data.ConfigFile
 import Data.IORef
 import Data.Time.Clock
 
+import Database.Enumerator
+import Database.PostgreSQL.Enumerator
+
 import System.Environment
 import System.Exit
 import System.Posix.Clock
@@ -31,6 +34,7 @@ import System.Random
 import Text.Printf
 
 import VMPS.Algorithms
+import VMPS.Database
 import VMPS.EnergyMinimizationChain
 import VMPS.Models
 import VMPS.Operators
@@ -189,6 +193,8 @@ main = do
         multisweep_energy_change_convergence_criterion = 1e-3
         tolerance = 1e-4
 
+    connection <- makeConnection "vmps"
+
     operator_site_tensors <- makeModelOperatorSiteTensors 0.5 size
 
     putStrLn $ "Size = " ++ show size
@@ -270,6 +276,27 @@ main = do
         putStrLn . show $ energy
 
     TimeSpec time_in_seconds _ <- getTime ProcessCPUTime
+
+    -- @    << Store in database >>
+    -- @+node:gcross.20100213201137.1267:<< Store in database >>
+    let [ground_state_energy,excited_state_energy] = energies
+        energy_gap = excited_state_energy - ground_state_energy
+
+    1 <- withSession connection $
+        withTransaction ReadCommitted $
+            execDML
+                (cmdbind "insert into split_cluster_random_angle_simulations (size, energy_gap, ground_energy, excited_energy, bandwidth_convergence_criterion, sweep_convergence_criterion, eigenproblem_convergence_criterion) values (?,?,?,?,?,?,?);"
+                     [bindP size
+                     ,bindP energy_gap
+                     ,bindP ground_state_energy
+                     ,bindP excited_state_energy
+                     ,bindP bandwidth_increase_energy_change_convergence_criterion
+                     ,bindP multisweep_energy_change_convergence_criterion
+                     ,bindP tolerance
+                     ]
+                )
+    -- @-node:gcross.20100213201137.1267:<< Store in database >>
+    -- @nl
 
     putStrLn $ "The elapsed CPU time for this run was " ++ show time_in_seconds ++ " seconds."
 
